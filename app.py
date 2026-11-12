@@ -72,16 +72,37 @@ st.markdown("""
         color-scheme: light !important;
     }
 
-    /* Lock Viewport: Zero horizontal scroll / no side panning */
-    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main, [data-testid="stHeader"], .block-container {
+    /* Base Styling */
+    html, body, [class*="css"], .stApp {
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         background-color: #FFFFFF !important;
         background: #FFFFFF !important;
         color: #0A0A0A !important;
         -webkit-font-smoothing: antialiased;
-        overflow-x: hidden !important;
-        max-width: 100vw !important;
-        box-sizing: border-box !important;
+    }
+
+    /* Enable Smooth Mobile Touch Scrolling (Fixes Stuck Vertical Scroll) */
+    html, body {
+        overflow-x: clip !important;
+        position: relative;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        background-color: #FFFFFF !important;
+        overflow-y: auto !important;
+        overflow-x: clip !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
+    }
+
+    [data-testid="stMain"], .main {
+        background-color: #FFFFFF !important;
+        overflow-y: visible !important;
+        overflow-x: clip !important;
+    }
+
+    [data-testid="stHeader"] {
+        background-color: #FFFFFF !important;
     }
 
     #MainMenu, header, footer { display: none !important; }
@@ -89,12 +110,13 @@ st.markdown("""
 
     .block-container {
         padding-top: 1rem !important;
-        padding-bottom: 3.5rem !important;
+        padding-bottom: 4.5rem !important;
         padding-left: 0.85rem !important;
         padding-right: 0.85rem !important;
         max-width: 500px !important;
         margin: 0 auto !important;
         box-sizing: border-box !important;
+        overflow-x: clip !important;
     }
 
     /* Top Brand Bar */
