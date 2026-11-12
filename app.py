@@ -36,7 +36,7 @@ TURKISH_MONTHS = {
 def format_date_tr(d: date) -> str:
     day_name = TURKISH_DAYS.get(d.weekday(), "")
     month_name = TURKISH_MONTHS.get(d.month, "")
-    return f"{d.day} {month_name} {d.year}, {day_name}"
+    return f"{d.day} {month_name}, {day_name}"
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "menu_data.json")
 
@@ -167,13 +167,14 @@ st.markdown("""
         margin-bottom: 3px;
     }
     .hero-h1 {
-        font-size: 1.35rem !important;
+        font-size: 1.3rem !important;
         font-weight: 800;
         letter-spacing: -0.03em;
-        line-height: 1.25 !important;
+        line-height: 1.2 !important;
         color: #0A0A0A;
         margin-bottom: 0.35rem;
-        word-break: break-word;
+        white-space: nowrap !important;
+        text-align: center;
     }
     
     /* Ice-Blue Pill Banner (Responsive Flex Wrap) */
@@ -203,37 +204,55 @@ st.markdown("""
         flex-shrink: 0;
     }
 
-    /* 7-Day Button Column Fixes (Anti-Collision & Touch Optimized) */
-    div[data-testid="column"] {
-        padding: 0 1px !important;
-        min-width: 0 !important;
+    /* Force columns to ALWAYS stay SIDE-BY-SIDE (Yan Yana) on Mobile */
+    [data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 3px !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
     }
+    [data-testid="stHorizontalBlock"]::-webkit-scrollbar {
+        display: none !important;
+    }
+    [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+        flex: 1 1 0px !important;
+        min-width: 0 !important;
+        width: auto !important;
+        padding: 0 !important;
+    }
+
+    /* Day Button Styles (Strictly Side-by-Side Text on ONE line) */
     div[data-testid="stButton"] button {
-        border-radius: 12px !important;
+        border-radius: 999px !important;
         font-weight: 700 !important;
         font-size: 0.72rem !important;
-        padding: 4px 1px !important;
-        min-height: 48px !important;
+        padding: 6px 2px !important;
+        min-height: 38px !important;
+        height: 38px !important;
         border: 1px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
         color: #0A0A0A !important;
         transition: all 0.15s ease !important;
         box-shadow: none !important;
         min-width: 0 !important;
+        white-space: nowrap !important;
         overflow: hidden !important;
         display: flex !important;
-        flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
     }
     div[data-testid="stButton"] button p {
         font-size: 0.72rem !important;
         font-weight: 700 !important;
-        line-height: 1.3 !important;
+        line-height: 1 !important;
         margin: 0 !important;
         text-align: center !important;
-        white-space: pre-line !important;
-        word-break: normal !important;
+        white-space: nowrap !important;
+        word-break: keep-all !important;
     }
     div[data-testid="stButton"] button:hover {
         background-color: #F8FAFC !important;
@@ -489,7 +508,7 @@ with tab_today:
                 st.session_state.selected_date = sel_date + timedelta(days=1)
                 st.rerun()
 
-    # 7-Day Clean Button Strip (Mobile Touch-Friendly: Day Name on Top, Date on Bottom)
+    # 7-Day Clean Button Strip (Yan Yana / Single Line)
     start_offset = max(0, min((sel_date - first_d).days - 3, (last_d - first_d).days - 6))
     strip_start = first_d + timedelta(days=start_offset)
 
@@ -500,7 +519,8 @@ with tab_today:
             break
         is_active = (target_d == sel_date)
         short_name = TURKISH_DAYS_SHORT.get(target_d.weekday(), "")
-        lbl = f"{short_name}\n{target_d.day}"
+        # Yan yana tek satır etiket: "12 Per"
+        lbl = f"{target_d.day} {short_name}"
 
         with strip_cols[idx]:
             if st.button(lbl, key=f"btn_d_{target_d.strftime('%Y%m%d')}", use_container_width=True, type="primary" if is_active else "secondary"):
