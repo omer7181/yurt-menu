@@ -59,9 +59,15 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-    html, body, [class*="css"] {
+    /* Force Light Theme Canvas regardless of browser / OS Dark Mode */
+    :root, [data-theme="dark"], [data-theme="light"], html, body {
+        color-scheme: light !important;
+    }
+
+    html, body, [class*="css"], .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main, [data-testid="stHeader"] {
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
         color: #0A0A0A !important;
         -webkit-font-smoothing: antialiased;
     }
@@ -104,30 +110,38 @@ st.markdown("""
         letter-spacing: 0.02em;
     }
 
-    /* Fixed Modern Tabs (NO HARSH BLACK BOX) */
+    /* Fixed Modern Tabs */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 6px;
+        gap: 6px !important;
         background-color: #F8FAFC !important;
         padding: 4px !important;
         border-radius: 14px !important;
         border: 1px solid #E2E8F0 !important;
-        justify-content: space-around;
-        margin-bottom: 1.2rem;
+        justify-content: space-around !important;
+        margin-bottom: 1.2rem !important;
     }
     .stTabs [data-baseweb="tab"] {
         border-radius: 10px !important;
         font-weight: 700 !important;
         font-size: 0.84rem !important;
         padding: 8px 16px !important;
-        color: #64748B !important;
         background-color: transparent !important;
         border: none !important;
         transition: all 0.15s ease !important;
     }
+    .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span {
+        color: #64748B !important;
+    }
     .stTabs [aria-selected="true"] {
         background-color: #FFFFFF !important;
-        color: #0284C7 !important;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06) !important;
+    }
+    .stTabs [aria-selected="true"] p, .stTabs [aria-selected="true"] span {
+        color: #0284C7 !important;
+        font-weight: 800 !important;
+    }
+    .stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"] {
+        display: none !important;
     }
 
     /* Hero Headline */
@@ -364,14 +378,25 @@ st.markdown("""
     }
 
     /* Radio Group Pill */
-    div[role="radiogroup"] {
-        background: #F8FAFC;
-        padding: 4px;
-        border-radius: 999px;
-        border: 1px solid #E2E8F0;
-        gap: 6px;
-        justify-content: center;
-        margin-bottom: 1.2rem;
+    div[data-testid="stRadio"] {
+        background-color: transparent !important;
+    }
+    div[data-testid="stRadio"] > div {
+        background: #F8FAFC !important;
+        padding: 4px 12px !important;
+        border-radius: 999px !important;
+        border: 1px solid #E2E8F0 !important;
+        gap: 12px !important;
+        justify-content: center !important;
+        margin-bottom: 1.2rem !important;
+    }
+    div[data-testid="stRadio"] label {
+        color: #0A0A0A !important;
+    }
+    div[data-testid="stRadio"] label p {
+        color: #0A0A0A !important;
+        font-weight: 700 !important;
+        font-size: 0.82rem !important;
     }
 
     /* Search Results */
