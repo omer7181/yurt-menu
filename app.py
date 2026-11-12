@@ -1,7 +1,7 @@
 import streamlit as st
 import json
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 import urllib.parse
 
 # ----------------- PAGE CONFIG -----------------
@@ -11,7 +11,15 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ----------------- CONSTANTS & HELPERS -----------------
+# ----------------- TIMEZONE & HELPERS (Turkey UTC+3) -----------------
+TURKEY_TZ = timezone(timedelta(hours=3))
+
+def get_turkey_now() -> datetime:
+    return datetime.now(TURKEY_TZ)
+
+def get_turkey_today() -> date:
+    return get_turkey_now().date()
+
 TURKISH_DAYS = {
     0: "Pazartesi", 1: "Salı", 2: "Çarşamba", 3: "Perşembe",
     4: "Cuma", 5: "Cumartesi", 6: "Pazar"
@@ -144,41 +152,47 @@ st.markdown("""
         display: none !important;
     }
 
-    /* Hero Headline */
+    /* Hero Headline (Mobile Optimized & Centered) */
     .hero-title-box {
-        margin-bottom: 1.2rem;
+        margin-top: 0.6rem;
+        margin-bottom: 0.9rem;
+        text-align: center;
     }
     .hero-kicker {
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
+        letter-spacing: 0.08em;
         color: #64748B;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
     }
     .hero-h1 {
-        font-size: 1.75rem;
+        font-size: 1.35rem !important;
         font-weight: 800;
-        letter-spacing: -0.04em;
-        line-height: 1.15;
+        letter-spacing: -0.03em;
+        line-height: 1.25 !important;
         color: #0A0A0A;
-        margin-bottom: 0.45rem;
+        margin-bottom: 0.35rem;
+        word-break: break-word;
     }
     
-    /* Ice-Blue Pill Banner */
+    /* Ice-Blue Pill Banner (Responsive Flex Wrap) */
     .ice-pill-banner {
         display: inline-flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        gap: 6px;
         background: #F0F9FF;
         border: 1px solid #BAE6FD;
         border-radius: 999px;
         padding: 5px 12px;
-        font-size: 0.76rem;
+        font-size: 0.74rem;
         font-weight: 700;
         color: #0284C7;
-        margin-top: 0.1rem;
-        margin-bottom: 0.9rem;
+        line-height: 1.35;
+        margin: 0 auto;
+        text-align: center;
     }
     .ice-pill-dot {
         width: 7px;
@@ -186,34 +200,40 @@ st.markdown("""
         border-radius: 50%;
         background-color: #0284C7;
         display: inline-block;
+        flex-shrink: 0;
     }
 
-    /* 7-Day Button Column Fixes (PREVENT ELLIPSIS TRUNCATION) */
+    /* 7-Day Button Column Fixes (Anti-Collision & Touch Optimized) */
     div[data-testid="column"] {
-        padding: 0 1.5px !important;
+        padding: 0 1px !important;
         min-width: 0 !important;
     }
     div[data-testid="stButton"] button {
-        border-radius: 999px !important;
+        border-radius: 12px !important;
         font-weight: 700 !important;
-        font-size: 0.76rem !important;
-        padding: 6px 1px !important;
+        font-size: 0.72rem !important;
+        padding: 4px 1px !important;
+        min-height: 48px !important;
         border: 1px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
         color: #0A0A0A !important;
         transition: all 0.15s ease !important;
         box-shadow: none !important;
         min-width: 0 !important;
-        overflow: visible !important;
-        white-space: pre !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     div[data-testid="stButton"] button p {
-        font-size: 0.76rem !important;
+        font-size: 0.72rem !important;
         font-weight: 700 !important;
-        white-space: pre !important;
-        overflow: visible !important;
+        line-height: 1.3 !important;
         margin: 0 !important;
-        line-height: 1.15 !important;
+        text-align: center !important;
+        white-space: pre-line !important;
+        word-break: normal !important;
     }
     div[data-testid="stButton"] button:hover {
         background-color: #F8FAFC !important;
@@ -226,6 +246,7 @@ st.markdown("""
     }
     div[data-testid="stButton"] button[kind="primary"] p {
         color: #FFFFFF !important;
+        font-weight: 800 !important;
     }
 
     /* Modern Card Sections */
@@ -419,10 +440,10 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ----------------- SESSION STATE & DATE INITIALIZATION -----------------
+today_tr = get_turkey_today()
 if "selected_date" not in st.session_state or not isinstance(st.session_state.selected_date, date):
-    t = date.today()
-    if first_d <= t <= last_d:
-        st.session_state.selected_date = t
+    if first_d <= today_tr <= last_d:
+        st.session_state.selected_date = today_tr
     else:
         st.session_state.selected_date = DEFAULT_DATE
 
@@ -434,9 +455,9 @@ elif st.session_state.selected_date > last_d:
 sel_date = st.session_state.selected_date
 current_date_str = sel_date.strftime("%Y-%m-%d")
 
-# ----------------- BRAND NAVBAR -----------------
+# ----------------- BRAND NAVBAR (Accurate Turkey Time) -----------------
 dorm_title = menu_db.get("dorm_name", "Yurt Yemekhanesi")
-now = datetime.now()
+now = get_turkey_now()
 
 st.markdown(f"""
 <div class="aero-nav">
@@ -450,26 +471,25 @@ tab_today, tab_all = st.tabs(["Günün Menüsü", "Aylık Liste & Arama"])
 
 # ----------------- TAB 1: GÜNÜN MENÜSÜ -----------------
 with tab_today:
-    # Top Navigator: [Dün] [Bugün] [Yarın]
-    c_prev, c_today, c_next = st.columns([1, 1.2, 1])
+    # Top Navigator: [‹ Dün] [⭐ Bugün] [Yarın ›]
+    c_prev, c_today, c_next = st.columns([1, 1.4, 1])
     with c_prev:
-        if st.button("Dün", use_container_width=True):
+        if st.button("‹ Dün", use_container_width=True):
             if sel_date > first_d:
                 st.session_state.selected_date = sel_date - timedelta(days=1)
                 st.rerun()
     with c_today:
-        is_curr_today = (sel_date == date.today())
-        if st.button("Bugün", use_container_width=True, type="primary" if is_curr_today else "secondary"):
-            t = date.today()
-            st.session_state.selected_date = t if (first_d <= t <= last_d) else DEFAULT_DATE
+        is_curr_today = (sel_date == today_tr)
+        if st.button("⭐ Bugün", use_container_width=True, type="primary" if is_curr_today else "secondary"):
+            st.session_state.selected_date = today_tr if (first_d <= today_tr <= last_d) else DEFAULT_DATE
             st.rerun()
     with c_next:
-        if st.button("Yarın", use_container_width=True):
+        if st.button("Yarın ›", use_container_width=True):
             if sel_date < last_d:
                 st.session_state.selected_date = sel_date + timedelta(days=1)
                 st.rerun()
 
-    # 7-Day Clean Button Strip (Fixed Labels & No Ellipsis)
+    # 7-Day Clean Button Strip (Mobile Touch-Friendly: Day Name on Top, Date on Bottom)
     start_offset = max(0, min((sel_date - first_d).days - 3, (last_d - first_d).days - 6))
     strip_start = first_d + timedelta(days=start_offset)
 
@@ -480,8 +500,7 @@ with tab_today:
             break
         is_active = (target_d == sel_date)
         short_name = TURKISH_DAYS_SHORT.get(target_d.weekday(), "")
-        # Compact single-line label like "12 Per"
-        lbl = f"{target_d.day} {short_name}"
+        lbl = f"{short_name}\n{target_d.day}"
 
         with strip_cols[idx]:
             if st.button(lbl, key=f"btn_d_{target_d.strftime('%Y%m%d')}", use_container_width=True, type="primary" if is_active else "secondary"):
@@ -490,7 +509,7 @@ with tab_today:
 
     # Active Day Hero Header & Dynamic Meal Hours
     formatted_date_str = format_date_tr(sel_date)
-    is_today_match = (sel_date == date.today())
+    is_today_match = (sel_date == today_tr)
     day_badge_label = "GÜNÜN MENÜSÜ" if is_today_match else f"{TURKISH_DAYS.get(sel_date.weekday(), '').upper()} GÜNÜ"
     
     # Weekday vs Weekend Meal Hours
