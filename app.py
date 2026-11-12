@@ -72,12 +72,16 @@ st.markdown("""
         color-scheme: light !important;
     }
 
-    html, body, [class*="css"], .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main, [data-testid="stHeader"] {
+    /* Lock Viewport: Zero horizontal scroll / no side panning */
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], .main, [data-testid="stHeader"], .block-container {
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         background-color: #FFFFFF !important;
         background: #FFFFFF !important;
         color: #0A0A0A !important;
         -webkit-font-smoothing: antialiased;
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
     }
 
     #MainMenu, header, footer { display: none !important; }
@@ -90,6 +94,7 @@ st.markdown("""
         padding-right: 0.85rem !important;
         max-width: 500px !important;
         margin: 0 auto !important;
+        box-sizing: border-box !important;
     }
 
     /* Top Brand Bar */
@@ -100,6 +105,8 @@ st.markdown("""
         padding: 0.6rem 0 1.1rem 0;
         border-bottom: 1px solid #F1F5F9;
         margin-bottom: 1.1rem;
+        box-sizing: border-box;
+        width: 100%;
     }
     .aero-logo {
         font-size: 1.15rem;
@@ -118,27 +125,43 @@ st.markdown("""
         letter-spacing: 0.02em;
     }
 
-    /* Fixed Modern Tabs */
+    /* Centered Symmetrical Modern Tabs (Günün Menüsü & Aylık Liste Ortada) */
+    div[data-testid="stTabs"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+    }
     .stTabs [data-baseweb="tab-list"] {
+        display: flex !important;
         gap: 6px !important;
         background-color: #F8FAFC !important;
         padding: 4px !important;
         border-radius: 14px !important;
         border: 1px solid #E2E8F0 !important;
-        justify-content: space-around !important;
-        margin-bottom: 1.2rem !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto 1.2rem auto !important;
+        box-sizing: border-box !important;
     }
     .stTabs [data-baseweb="tab"] {
+        flex: 1 1 50% !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
         font-size: 0.84rem !important;
-        padding: 8px 16px !important;
+        padding: 8px 12px !important;
         background-color: transparent !important;
         border: none !important;
+        justify-content: center !important;
+        text-align: center !important;
         transition: all 0.15s ease !important;
     }
     .stTabs [data-baseweb="tab"] p, .stTabs [data-baseweb="tab"] span {
         color: #64748B !important;
+        text-align: center !important;
+        width: 100% !important;
     }
     .stTabs [aria-selected="true"] {
         background-color: #FFFFFF !important;
@@ -204,21 +227,21 @@ st.markdown("""
         flex-shrink: 0;
     }
 
-    /* Symmetrical Mobile 3-Button Navigation Bar */
-    [data-testid="stHorizontalBlock"] {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        gap: 8px !important;
+    /* Symmetrical 3-Column Navigation Grid (Bugün Tam Ortada) */
+    div[data-testid="stHorizontalBlock"] {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr 1fr !important;
+        gap: 6px !important;
         width: 100% !important;
-        margin-bottom: 0.6rem !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        margin-bottom: 0.8rem !important;
     }
-    [data-testid="stHorizontalBlock"] > [data-testid="column"] {
-        flex: 1 1 0px !important;
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        width: 100% !important;
         min-width: 0 !important;
         padding: 0 !important;
+        box-sizing: border-box !important;
     }
     div[data-testid="stButton"] {
         width: 100% !important;
@@ -502,7 +525,7 @@ tab_today, tab_all = st.tabs(["Günün Menüsü", "Aylık Liste & Arama"])
 # ----------------- TAB 1: GÜNÜN MENÜSÜ -----------------
 with tab_today:
     # Symmetrical 3-Button Navigation: [‹ Dün] [⭐ Bugün] [Yarın ›]
-    c_prev, c_today, c_next = st.columns([1, 1.2, 1])
+    c_prev, c_today, c_next = st.columns([1, 1, 1])
     with c_prev:
         if st.button("‹ Dün", use_container_width=True):
             if sel_date > first_d:
