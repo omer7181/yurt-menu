@@ -204,55 +204,49 @@ st.markdown("""
         flex-shrink: 0;
     }
 
-    /* Force columns to ALWAYS stay SIDE-BY-SIDE (Yan Yana) on Mobile */
+    /* Symmetrical Mobile 3-Button Navigation Bar */
     [data-testid="stHorizontalBlock"] {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        gap: 3px !important;
+        gap: 8px !important;
         width: 100% !important;
-        overflow-x: auto !important;
-        scrollbar-width: none !important;
-    }
-    [data-testid="stHorizontalBlock"]::-webkit-scrollbar {
-        display: none !important;
+        margin-bottom: 0.6rem !important;
     }
     [data-testid="stHorizontalBlock"] > [data-testid="column"] {
         flex: 1 1 0px !important;
         min-width: 0 !important;
-        width: auto !important;
         padding: 0 !important;
     }
-
-    /* Day Button Styles (Strictly Side-by-Side Text on ONE line) */
+    div[data-testid="stButton"] {
+        width: 100% !important;
+    }
     div[data-testid="stButton"] button {
+        width: 100% !important;
         border-radius: 999px !important;
         font-weight: 700 !important;
-        font-size: 0.72rem !important;
-        padding: 6px 2px !important;
-        min-height: 38px !important;
-        height: 38px !important;
+        font-size: 0.82rem !important;
+        padding: 0 4px !important;
+        min-height: 42px !important;
+        height: 42px !important;
         border: 1px solid #E2E8F0 !important;
         background-color: #FFFFFF !important;
         color: #0A0A0A !important;
         transition: all 0.15s ease !important;
-        box-shadow: none !important;
-        min-width: 0 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.02) !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
+        text-align: center !important;
     }
     div[data-testid="stButton"] button p {
-        font-size: 0.72rem !important;
+        font-size: 0.82rem !important;
         font-weight: 700 !important;
-        line-height: 1 !important;
+        white-space: nowrap !important;
         margin: 0 !important;
         text-align: center !important;
-        white-space: nowrap !important;
-        word-break: keep-all !important;
     }
     div[data-testid="stButton"] button:hover {
         background-color: #F8FAFC !important;
@@ -439,6 +433,23 @@ st.markdown("""
         font-size: 0.82rem !important;
     }
 
+    /* Popover Date Button */
+    div[data-testid="stPopover"] {
+        width: 100% !important;
+        margin-bottom: 1rem !important;
+    }
+    div[data-testid="stPopover"] button {
+        width: 100% !important;
+        border-radius: 999px !important;
+        font-weight: 700 !important;
+        font-size: 0.8rem !important;
+        background: #F8FAFC !important;
+        border: 1px dashed #CBD5E1 !important;
+        color: #475569 !important;
+        height: 38px !important;
+        min-height: 38px !important;
+    }
+
     /* Search Results */
     .search-card-aero {
         background: #FFFFFF;
@@ -490,8 +501,8 @@ tab_today, tab_all = st.tabs(["Günün Menüsü", "Aylık Liste & Arama"])
 
 # ----------------- TAB 1: GÜNÜN MENÜSÜ -----------------
 with tab_today:
-    # Top Navigator: [‹ Dün] [⭐ Bugün] [Yarın ›]
-    c_prev, c_today, c_next = st.columns([1, 1.4, 1])
+    # Symmetrical 3-Button Navigation: [‹ Dün] [⭐ Bugün] [Yarın ›]
+    c_prev, c_today, c_next = st.columns([1, 1.2, 1])
     with c_prev:
         if st.button("‹ Dün", use_container_width=True):
             if sel_date > first_d:
@@ -506,25 +517,6 @@ with tab_today:
         if st.button("Yarın ›", use_container_width=True):
             if sel_date < last_d:
                 st.session_state.selected_date = sel_date + timedelta(days=1)
-                st.rerun()
-
-    # 7-Day Clean Button Strip (Yan Yana / Single Line)
-    start_offset = max(0, min((sel_date - first_d).days - 3, (last_d - first_d).days - 6))
-    strip_start = first_d + timedelta(days=start_offset)
-
-    strip_cols = st.columns(7)
-    for idx in range(7):
-        target_d = strip_start + timedelta(days=idx)
-        if target_d > last_d:
-            break
-        is_active = (target_d == sel_date)
-        short_name = TURKISH_DAYS_SHORT.get(target_d.weekday(), "")
-        # Yan yana tek satır etiket: "12 Per"
-        lbl = f"{target_d.day} {short_name}"
-
-        with strip_cols[idx]:
-            if st.button(lbl, key=f"btn_d_{target_d.strftime('%Y%m%d')}", use_container_width=True, type="primary" if is_active else "secondary"):
-                st.session_state.selected_date = target_d
                 st.rerun()
 
     # Active Day Hero Header & Dynamic Meal Hours
@@ -548,6 +540,19 @@ with tab_today:
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # Clean date jump popover
+    with st.popover("📅 Başka bir günün menüsüne bak", use_container_width=True):
+        picked_d = st.date_input(
+            "Tarih Seç",
+            value=sel_date,
+            min_value=first_d,
+            max_value=last_d,
+            label_visibility="collapsed"
+        )
+        if picked_d != sel_date:
+            st.session_state.selected_date = picked_d
+            st.rerun()
 
     # Segmented Control: [Tümü, Kahvaltı, Akşam]
     filter_choice = st.radio(
