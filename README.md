@@ -18,14 +18,5 @@ Kasım 2026 yurt yemekhanesi menüsünü mobil cihazlarda en sade, hızlı ve mo
   - Açılır-kapanır aylık takvim arşivi.
 
 - **Güvenlik & Sadelik:**
-  - Web arayüzü yalnızca görüntüleme odaklıdır (dışarıdan menü ekleme/düzenleme kaldırılmıştır).
-  - Gereksiz emoji veya karmaşık grafikler olmadan, yüksek okunabilirliğe sahip İsviçre/Nordik tipografisi kullanılmıştır.
+  - Web arayüzü yalnızca görüntüleme odaklıdır
 
----
-
-## Çalıştırma
-
-```powershell
-streamlit run app.py
-```
-Tarayıcınızda `http://localhost:8501` adresinden açılacaktır.
